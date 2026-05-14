@@ -50,7 +50,7 @@ graph TD;
   <!-- NOTE: REPLACE THESE SRC LINKS WITH YOUR ACTUAL GITHUB IMAGE PATHS -->
   <img src="https://github.com/MrCipher-X/SOC-Log-Analysis/blob/main/licensed-image.jpeg" width="45%" alt="SIEM Dashboard Evidence">
   &nbsp; &nbsp;
-  <img src="https://via.placeholder.com/400x250/1a1a1a/8A2BE2?text=Raw+Log+Query+Execution" width="45%" alt="Raw Log Query Evidence">
+  <img src="[https://via.placeholder.com/400x250/1a1a1a/8A2BE2?text=Raw+Log+Query+Execution](https://github.com/MrCipher-X/SOC-Log-Analysis/blob/main/splunk_bruteforce_evidence.png)" width="45%" alt="Raw Log Query Evidence">
 </p>
 
 ---
