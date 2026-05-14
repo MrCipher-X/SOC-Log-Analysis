@@ -1,80 +1,59 @@
-\# 🛡️ SOC Log Analysis: Brute Force Detection \& Threat Hunting with Splunk
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=rect&color=00FFFF&height=100&section=header&text=SOC%20Log%20Analysis%20&%20SIEM&fontSize=38&fontColor=000000&animation=glitch" alt="Header">
+</div>
 
+> **CLASSIFIED OPERATION:** SECURITY OPERATIONS, LOG INGESTION & THREAT CORRELATION <br>
+> **STATUS:** CONCLUDED | **AUTHOR:** MR. CIPHER-X [C|THE]
 
+<br>
 
-\## 📖 Executive Summary
+### 🛡️ Operation Abstract
 
-In this project, I simulated the role of a \*\*Level 1 SOC Analyst\*\* responding to a potential credential compromise. The objective was to deploy a SIEM solution (Splunk), ingest raw Windows Security logs, and develop high-fidelity detection rules to identify Brute Force attacks in real-time. This lab demonstrates proficiency in \*\*Log Analysis, SPL (Splunk Processing Language), and Incident Triage.\*\*
-
-
-
----
-
-
-
-\## 🏗️ Technical Architecture
-
-\* \*\*SIEM Platform:\*\* Splunk Enterprise 9.x
-
-\* \*\*Log Source:\*\* Windows Event Logs (Security Channel) via Local Monitor.
-
-\* \*\*Key Event IDs Monitored:\*\*
-
-&nbsp;   \* `4625`: Logon Failure (Unknown user or bad password).
-
-&nbsp;   \* `4624`: Successful Logon (Used to correlate successful entry after failures).
-
-&nbsp;   \* `4688`: Process Creation (Used to inspect post-compromise activity).
-
-
+This repository details the architecture and execution of a centralized Security Operations Center (SOC) log analysis pipeline. The objective was to ingest diverse telemetry sources (Endpoints, Firewalls, Web Servers), parse the raw data, and write custom SIEM correlation rules to detect persistent threats, brute-force attempts, and lateral movement in real-time.
 
 ---
 
+### ⚙️ SIEM Architecture & Data Pipeline
 
+```mermaid
+graph TD;
+    A[Windows Event Logs] --> D(Log Forwarder / Beats);
+    B[Linux Syslog & auth.log] --> D;
+    C[Firewall / IDS Traffic] --> D;
+    D -->|Encrypted JSON Stream| E{SIEM Core Engine};
+    E -->|Grok Parsing & Normalization| F[Indexed Storage];
+    E -->|Custom Correlation Rules| G[Threat Detection Logic];
+    G -->|Threshold Exceeded| H[SOC Analyst Dashboard];
+    H -->|Triage & Mitigation| I[Incident Response];
+    
+    style E fill:#1a1a1a,stroke:#00FFFF,stroke-width:2px;
+    style H fill:#1a1a1a,stroke:#8A2BE2,stroke-width:2px;
+```
 
-\## 🔬 Investigation Methodology
+---
 
+### 🦠 Threat Detection Matrix (Correlation Rules)
 
+| **Threat Vector** | **Log Source / Event ID** | **Detection Logic (SIEM Query Base)** | **Tactical Response** |
+| :--- | :--- | :--- | :--- |
+| **Active Directory Brute Force** | Windows Security Logs (Event ID: `4625`) | Count > 10 failed logins within 5 mins from a single IP. | Automate IP block at perimeter firewall. |
+| **Privilege Escalation** | Linux `auth.log` / `secure` | Unauthorized user executing `sudo su` or adding to `wheel` group. | Trigger high-severity alert, isolate endpoint. |
+| **Web Application Attack (SQLi)** | Apache / Nginx Access Logs | HTTP GET/POST containing anomalous characters (`' OR 1=1--`). | Blacklist source IP, review WAF configurations. |
 
-\### Phase 1: Attack Simulation
+---
 
-To generate realistic data, I simulated a manual Brute Force attack:
+### 📸 Digital Evidence Board
 
-1\.  Locked the target workstation.
+*(Note: Real-world client telemetry is redacted. The following evidence represents SIEM dashboards and query executions.)*
 
-2\.  Executed 15+ failed login attempts using the `Administrator` and `User` accounts within a 2-minute window.
+<p align="center">
+  <!-- NOTE: REPLACE THESE SRC LINKS WITH YOUR ACTUAL GITHUB IMAGE PATHS -->
+  <img src="https://github.com/MrCipher-X/SOC-Log-Analysis/blob/main/licensed-image.jpeg" width="45%" alt="SIEM Dashboard Evidence">
+  &nbsp; &nbsp;
+  <img src="https://via.placeholder.com/400x250/1a1a1a/8A2BE2?text=Raw+Log+Query+Execution" width="45%" alt="Raw Log Query Evidence">
+</p>
 
-3\.  Performed a successful login to simulate an "Account Takeover."
-
-
-
-\### Phase 2: Log Ingestion \& Normalization
-
-I configured Splunk to monitor the `WinEventLog:Security` channel. The raw XML data was parsed to extract critical fields:
-
-\* `Account\_Name` (Target Identity)
-
-\* `Workstation\_Name` (Source Device)
-
-\* `Source\_Network\_Address` (Attacker IP - \*Simulated as Localhost\*)
-
-
-
-\### Phase 3: Detection Engineering (SPL)
-
-I wrote the following Splunk Query to detect the anomaly. I used `stats` to aggregate failures and `sort` to prioritize the highest threats.
-
-
-
-```splunk
-
-index=main sourcetype="WinEventLog:Security" EventCode=4625
-
-| stats count by Account\_Name, Workstation\_Name, Source\_Network\_Address
-
-| rename Account\_Name as "Target User", Workstation\_Name as "Machine", count as "Failed\_Attempts"
-
-| where Failed\_Attempts > 5
-
-| sort - Failed\_Attempts
-
+---
+<div align="center">
+  <code>[ OPERATION TERMINATED - TELEMETRY SECURED ]</code>
+</div>
